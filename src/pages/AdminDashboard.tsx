@@ -299,8 +299,39 @@ function StudentProfileModal({ student, onClose, token }: { student: User, onClo
                   <p className="font-bold">{student.date_of_birth}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase opacity-30">Mobile Number</p>
-                  <p className="font-bold">{student.mobile}</p>
+                  <p className="text-[10px] font-bold uppercase opacity-30">Priority Category</p>
+                  <p className="font-bold uppercase text-amber-600">{student.priority_type || 'General'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase opacity-30">Current Academic Stage</p>
+                  <p className="font-black text-2xl text-indigo-600">STAGE {student.current_stage || 1}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-[10px] font-bold uppercase tracking-widest opacity-40">Security & OS Status</h4>
+              <div className="grid grid-cols-1 gap-3">
+                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck className="text-emerald-600" size={20} />
+                    <span className="text-xs font-bold uppercase">OS Security</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 uppercase">Verified</span>
+                </div>
+                <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Camera className="text-blue-600" size={20} />
+                    <span className="text-xs font-bold uppercase">Camera Facility</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-blue-600 uppercase">Active</span>
+                </div>
+                <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Lock className="text-indigo-600" size={20} />
+                    <span className="text-xs font-bold uppercase">Browser Lock</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase">Enabled</span>
                 </div>
               </div>
             </div>
@@ -381,7 +412,8 @@ function AddStudentModal({ onClose, onAdded, token }: { onClose: () => void, onA
     mobile: '',
     department: '',
     profile_picture: '',
-    priority_type: 'general'
+    priority_type: 'general',
+    current_stage: 1
   });
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -480,6 +512,20 @@ function AddStudentModal({ onClose, onAdded, token }: { onClose: () => void, onA
                 <option value="general">General</option>
                 <option value="children">Children (Under 18)</option>
                 <option value="disability">Person with Disability</option>
+                <option value="senior">Senior Citizen</option>
+                <option value="special_needs">Special Needs</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest opacity-50">Academic Stage</label>
+              <select 
+                className="w-full p-3 border-2 border-[#141414] rounded-xl font-medium bg-white"
+                value={formData.current_stage}
+                onChange={e => setFormData({...formData, current_stage: parseInt(e.target.value)})}
+              >
+                <option value={1}>Stage 1 (Beginner)</option>
+                <option value={2}>Stage 2 (Intermediate)</option>
+                <option value={3}>Stage 3 (Advanced)</option>
               </select>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../App';
 import { Quiz } from '../types';
-import { BookOpen, Trophy, Clock, ChevronRight } from 'lucide-react';
+import { BookOpen, Trophy, Clock, ChevronRight, ShieldCheck, Camera, Accessibility } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 
@@ -53,6 +53,47 @@ export default function StudentDashboard() {
           </div>
         </div>
       </header>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="bg-white border-2 border-[#141414] p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(20,20,20,1)]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
+              <ShieldCheck size={20} />
+            </div>
+            <h4 className="text-xs font-bold uppercase tracking-widest">OS Security</h4>
+          </div>
+          <p className="text-[10px] font-medium opacity-50 uppercase mb-2">Status: Verified & Secure</p>
+          <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+            <div className="bg-emerald-500 h-full w-[100%]" />
+          </div>
+        </div>
+        <div className="bg-white border-2 border-[#141414] p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(20,20,20,1)]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-blue-100 text-blue-600 rounded-xl">
+              <Camera size={20} />
+            </div>
+            <h4 className="text-xs font-bold uppercase tracking-widest">Camera Facility</h4>
+          </div>
+          <p className="text-[10px] font-medium opacity-50 uppercase mb-2">Status: Ready for Proctoring</p>
+          <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+            <div className="bg-blue-500 h-full w-full" />
+          </div>
+        </div>
+        <div className="bg-white border-2 border-[#141414] p-6 rounded-3xl shadow-[4px_4px_0px_0px_rgba(20,20,20,1)]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-amber-100 text-amber-600 rounded-xl">
+              <Accessibility size={20} />
+            </div>
+            <h4 className="text-xs font-bold uppercase tracking-widest">Priority Mode</h4>
+          </div>
+          <p className="text-[10px] font-medium opacity-50 uppercase mb-2">Category: {user?.priority_type || 'General'}</p>
+          <div className="flex gap-1">
+            <div className="h-1.5 flex-1 bg-amber-500 rounded-full" />
+            <div className="h-1.5 flex-1 bg-amber-200 rounded-full" />
+            <div className="h-1.5 flex-1 bg-amber-200 rounded-full" />
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">

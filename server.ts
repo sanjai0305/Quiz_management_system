@@ -110,12 +110,20 @@ async function startServer() {
   });
 
   app.get('/api/students', authenticateToken, async (req, res) => {
-    const { data: students, error } = await supabase
-      .from('students')
-      .select('id, name, registration_number, date_of_birth, mobile, department, profile_picture, priority_type');
-    
-    if (error) return res.status(500).json({ error: error.message });
-    res.json(students);
+    try {
+      const { data: students, error } = await supabase
+        .from('students')
+        .select('*');
+      
+      if (error) {
+        console.error('Supabase Error:', error);
+        return res.status(500).json([]); // Return empty array to prevent frontend crash
+      }
+      res.json(students || []);
+    } catch (err) {
+      console.error('Server Error:', err);
+      res.status(500).json([]);
+    }
   });
 
   app.delete('/api/students/:id', authenticateToken, async (req, res) => {

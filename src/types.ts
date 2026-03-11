@@ -8,7 +8,13 @@ export interface User {
   role: 'admin' | 'student';
   department?: string;
   profile_picture?: string;
-  priority_type?: 'general' | 'children' | 'disability';
+  priority_type?: 'general' | 'children' | 'disability' | 'senior' | 'special_needs';
+  security_status?: {
+    camera_active: boolean;
+    os_secure: boolean;
+    browser_lock: boolean;
+  };
+  current_stage?: number;
 }
 
 export interface Quiz {
