@@ -92,7 +92,7 @@ async function startServer() {
 
   // Student Management (Admin)
   app.post('/api/students', authenticateToken, async (req, res) => {
-    const { name, registration_number, date_of_birth, mobile, department, profile_picture, priority_type } = req.body;
+    const { name, registration_number, date_of_birth, mobile, department, profile_picture, priority_type, current_stage } = req.body;
     const { data, error } = await supabase
       .from('students')
       .insert([{ 
@@ -102,7 +102,8 @@ async function startServer() {
         mobile, 
         department, 
         profile_picture, 
-        priority_type: priority_type || 'general' 
+        priority_type: priority_type || 'general',
+        current_stage: current_stage || 1
       }]);
 
     if (error) return res.status(400).json({ error: error.message });
@@ -295,6 +296,19 @@ async function startServer() {
     }));
 
     res.json(formatted);
+  });
+
+  app.get('/api/admin/student/:id', authenticateToken, async (req, res) => {
+    if ((req as any).user.role !== 'admin') return res.status(403).json({ error: 'Unauthorized' });
+    
+    const { data: student, error } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(student);
   });
 
   app.get('/api/admin/student/:id/results', authenticateToken, async (req, res) => {

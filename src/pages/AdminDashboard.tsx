@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../App';
 import { User, Quiz, Attempt } from '../types';
-import { Users, BookOpen, Trophy, Plus, Save, Trash2, AlertCircle, Accessibility, User as UserIcon, Pencil, Eye, ShieldCheck, Camera, X, Upload, ChevronRight, Clock } from 'lucide-react';
+import { Users, BookOpen, Trophy, Plus, Save, Trash2, AlertCircle, Accessibility, User as UserIcon, Pencil, Eye, ShieldCheck, Camera, Lock, X, Upload, ChevronRight, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function AdminDashboard() {
@@ -266,7 +266,7 @@ function StudentProfileModal({ student, onClose, token }: { student: User, onClo
 
   return (
     <div className="fixed inset-0 bg-[#141414]/80 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white border-2 border-[#141414] w-full max-w-2xl rounded-3xl overflow-hidden flex flex-col max-h-[90vh]">
+      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white border-2 border-[#141414] w-full max-w-4xl rounded-3xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-6 border-b border-[#141414]/10 flex justify-between items-center bg-gray-50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-indigo-600 text-white rounded-lg overflow-hidden flex items-center justify-center">
@@ -276,9 +276,20 @@ function StudentProfileModal({ student, onClose, token }: { student: User, onClo
                 <UserIcon size={20} />
               )}
             </div>
-            <h3 className="text-xl font-bold uppercase tracking-tight">Student Profile</h3>
+            <div>
+              <h3 className="text-xl font-bold uppercase tracking-tight">Student Profile</h3>
+              <p className="text-[10px] font-bold opacity-40 uppercase">Viewing: {student.name}</p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-sm font-bold opacity-50 hover:opacity-100">CLOSE</button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => window.open(`/student-preview/${student.id}`, '_blank')}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center gap-2"
+            >
+              <Eye size={14} /> Student Preview
+            </button>
+            <button onClick={onClose} className="text-sm font-bold opacity-50 hover:opacity-100">CLOSE</button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
@@ -615,8 +626,11 @@ function QuizModal({ onClose, onAdded, token, quizId }: { onClose: () => void, o
   const [bulkText, setBulkText] = useState('');
   const [isLoading, setIsLoading] = useState(!!quizId);
 
+  const [error, setError] = useState('');
+
   useEffect(() => {
     if (quizId) {
+      setIsLoading(true);
       fetch(`/api/quizzes/${quizId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -636,6 +650,11 @@ function QuizModal({ onClose, onAdded, token, quizId }: { onClose: () => void, o
             correct: q.correct_answer
           }))
         });
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setError('Failed to load quiz data');
         setIsLoading(false);
       });
     }
@@ -692,20 +711,28 @@ function QuizModal({ onClose, onAdded, token, quizId }: { onClose: () => void, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     const url = quizId ? `/api/quizzes/${quizId}` : '/api/quizzes';
     const method = quizId ? 'PUT' : 'POST';
 
-    const res = await fetch(url, {
-      method,
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(quizData)
-    });
-    if (res.ok) {
-      onAdded();
-      onClose();
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(quizData)
+      });
+      if (res.ok) {
+        onAdded();
+        onClose();
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Failed to save quiz');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
     }
   };
 
@@ -817,6 +844,13 @@ function QuizModal({ onClose, onAdded, token, quizId }: { onClose: () => void, o
               </div>
             ))}
           </div>
+
+          {error && (
+            <div className="p-4 bg-red-50 border-2 border-red-100 rounded-2xl flex items-center gap-3 text-red-600">
+              <AlertCircle size={20} />
+              <p className="text-xs font-bold uppercase tracking-wide">{error}</p>
+            </div>
+          )}
 
           <button type="submit" className="w-full bg-[#141414] text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-[#2a2a2a] transition-all">
             {quizId ? 'Save Changes' : 'Publish Quiz'}

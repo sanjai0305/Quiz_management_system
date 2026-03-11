@@ -4,6 +4,7 @@ import { User } from './types';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import StudentDashboard from './pages/StudentDashboard';
+import StudentPreview from './pages/StudentPreview';
 import QuizPage from './pages/QuizPage';
 import { Layout } from './components/Layout';
 import { AlertCircle } from 'lucide-react';
@@ -55,6 +56,10 @@ export default function App() {
             <Route
               path="/admin/*"
               element={user?.role === 'admin' ? <AdminDashboard /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/student-preview/:id"
+              element={user?.role === 'admin' ? <StudentPreview /> : <Navigate to="/login" />}
             />
             <Route
               path="/student/*"
