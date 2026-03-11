@@ -325,15 +325,25 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // Serve static files from the dist directory
-    const distPath = path.resolve(__dirname, 'dist');
-    console.log('Serving production build from:', distPath);
+    // In production (Railway/Vercel), serve static files
+    const distPath = path.resolve(process.cwd(), 'dist');
     
+    // Check if dist exists before trying to serve
     app.use(express.static(distPath));
     
     // Fallback to index.html for SPA routing
     app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      // If it's an API route that wasn't caught, don't serve index.html
+      if (req.url.startsWith('/api/')) {
+        return res.status(404).json({ error: 'API route not found' });
+      }
+      
+      const indexPath = path.join(distPath, 'index.html');
+      res.sendFile(indexPath, (err) => {
+        if (err) {
+          res.status(500).send("Build files not found. Please ensure 'npm run build' was executed.");
+        }
+      });
     });
   }
 
